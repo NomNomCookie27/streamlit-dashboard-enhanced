@@ -15,10 +15,6 @@ df['zip_code'] = df['zip_code'].astype(str)
 
 df['week'].value_counts()
 
-## Display dataset head as text
-st.text("Dataset Head (First 5 Rows):")
-st.text(df.head().to_string())
-
 ## box to show how many rows and columns of data we have: 
 col1, col2, col3 = st.columns(3)
 col1.metric("Columns", df.shape[1]) 
@@ -27,6 +23,8 @@ col3.metric("Number of unique districts/schools:", df['district_name'].nunique()
 
 ## exposing first 1k of NCES 20-21 data
 st.dataframe(df)
+
+
 
 table = pd.pivot_table(df, values='student_count', index=['week'],
                        columns=['learning_modality'], aggfunc="sum")
