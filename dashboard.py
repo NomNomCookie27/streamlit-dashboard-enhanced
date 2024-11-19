@@ -31,6 +31,19 @@ st.write(enrollment_data.columns)
 st.text("First 5 rows of the global enrollment data:")
 st.write(enrollment_data.head())
 
+# Check if the column 'LOCATION' is present and rename it
+if 'LOCATION' in enrollment_data.columns:
+    enrollment_data['Country'] = enrollment_data['LOCATION']
+else:
+    st.error("The 'LOCATION' column is not present in the dataset.")
+
+# Check for missing values in the 'Country' column and remove them
+enrollment_data = enrollment_data.dropna(subset=['Country'])
+
+# Display the cleaned data
+st.text("Cleaned Global Enrollment Data:")
+st.write(enrollment_data.head())
+
 # Metrics Section
 st.subheader("Data Overview")
 col1, col2, col3 = st.columns(3)
@@ -48,15 +61,6 @@ if st.checkbox("Show Raw Learning Modalities Data", value=False):
 
 if st.checkbox("Show Raw Global Enrollment Data", value=False):
     st.dataframe(enrollment_data)
-
-# Fix the correct column names based on the data preview
-# After displaying the columns and previewing the data, check the correct column names and use them
-
-# Example - If 'TIME' doesn't exist, we need to check the exact column names. 
-# For now, assume 'TIME_PERIOD' is the column for year (update accordingly)
-
-enrollment_data['Country'] = enrollment_data['LOCATION']
-enrollment_data['Year'] = enrollment_data['TIME_PERIOD']  # Change 'TIME_PERIOD' if different
 
 # Pivot Table for Visualization (Learning Modalities)
 table = pd.pivot_table(df, values='student_count', index=['week'],
@@ -122,20 +126,24 @@ The following visualizations explore global primary school enrollment trends by 
 # Enrollment Trend by Country
 countries = st.multiselect(
     "Select Countries to Display",
-    options=enrollment_data["Country"].unique(),
-    default=["United States", "India", "China"]
+    options=enrollment_data["Country"].unique(),  # Correct reference to 'Country'
+    default=["United States", "India", "China"]  # Default selected countries
 )
-filtered_enrollment = enrollment_data[enrollment_data["Country"].isin(countries)]
 
-enrollment_trend = px.line(
-    filtered_enrollment,
-    x="Year",
-    y="Value",
-    color="Country",
-    title="Primary School Enrollment Trends by Country",
-    labels={"Year": "Year", "Value": "Enrollment", "Country": "Country"}
-)
-st.plotly_chart(enrollment_trend)
+# Handle if no country is selected
+if countries:
+    filtered_enrollment = enrollment_data[enrollment_data["Country"].isin(countries)]
+    enrollment_trend = px.line(
+        filtered_enrollment,
+        x="Year",
+        y="Value",
+        color="Country",
+        title="Primary School Enrollment Trends by Country",
+        labels={"Year": "Year", "Value": "Enrollment", "Country": "Country"}
+    )
+    st.plotly_chart(enrollment_trend)
+else:
+    st.warning("Please select at least one country to display enrollment trends.")
 
 # Combined Analysis: Enrollment and Modalities
 st.subheader("Combined Analysis: Learning Modalities and Enrollment")
