@@ -40,6 +40,14 @@ else:
 # Check for missing values in the 'Country' column and remove them
 enrollment_data = enrollment_data.dropna(subset=['Country'])
 
+# Clean and convert Year and Value to correct data types
+# Ensure Year is numeric and Value is numeric (float)
+enrollment_data['Year'] = pd.to_numeric(enrollment_data['TIME_PERIOD'], errors='coerce')
+enrollment_data['Value'] = pd.to_numeric(enrollment_data['Value'], errors='coerce')
+
+# Remove rows with NaN values in 'Year' or 'Value'
+enrollment_data = enrollment_data.dropna(subset=['Year', 'Value'])
+
 # Display the cleaned data
 st.text("Cleaned Global Enrollment Data:")
 st.write(enrollment_data.head())
