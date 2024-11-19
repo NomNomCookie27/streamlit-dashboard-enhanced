@@ -123,11 +123,18 @@ st.text("""
 The following visualizations explore global primary school enrollment trends by country over the years.
 """)
 
+# Get available countries from the dataset
+available_countries = enrollment_data["Country"].unique()
+
+# Display available countries (for debugging)
+st.text("Available countries in the dataset:")
+st.write(available_countries)
+
 # Enrollment Trend by Country
 countries = st.multiselect(
     "Select Countries to Display",
-    options=enrollment_data["Country"].unique(),  # Correct reference to 'Country'
-    default=["United States", "India", "China"]  # Default selected countries
+    options=available_countries,  # Use actual country names from the dataset
+    default=["United States", "India", "China"]  # Default values; make sure they are valid countries
 )
 
 # Handle if no country is selected
