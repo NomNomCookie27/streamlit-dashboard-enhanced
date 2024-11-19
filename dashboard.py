@@ -1,13 +1,15 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+import requests
+from io import StringIO
 
 # Header and Introduction
-st.header("Enhanced Streamlit Dashboard: Learning Modalities and Global Education Insights")
+st.header("Enhanced Streamlit Dashboard: Learning Modalities and Global Enrollment Data")
 st.subheader("Overview")
 st.text("""
 This dashboard visualizes data related to school learning modalities (Hybrid, In-Person, and Remote) from 2020-2021,
-along with global literacy rates. Explore trends, comparisons, and insights through interactive visualizations.
+along with global primary school enrollment data. Explore trends, comparisons, and insights through interactive visualizations.
 """)
 
 # Load Data (Learning Modalities)
@@ -15,8 +17,12 @@ df = pd.read_csv("https://healthdata.gov/resource/a8v3-a3m3.csv?$limit=50000")
 df['week_recoded'] = pd.to_datetime(df['week'])
 df['zip_code'] = df['zip_code'].astype(str)
 
-# Load Data (Global Literacy Rates)
-literacy_data = pd.read_csv("https://raw.githubusercontent.com/owid/owid-datasets/master/datasets/Literacy%20rates%20by%20country/Literacy%20rates%20by%20country.csv")
+# Load Data (Global Enrollment)
+url = "https://datahub.io/core/global-primary-school-enrollment/r/enrollment.csv"
+response = requests.get(url)
+enrollment_data = pd.read_csv(StringIO(response.text))  # Load CSV from the response text
+
+st.text("Data successfully loaded!")
 
 # Metrics Section
 st.subheader("Data Overview")
@@ -26,15 +32,15 @@ col2.metric("Rows (Learning Modalities)", len(df))
 col3.metric("Unique Districts/Schools", df['district_name'].nunique())
 
 col4, col5 = st.columns(2)
-col4.metric("Global Literacy Columns", literacy_data.shape[1])
-col5.metric("Rows (Literacy Data)", len(literacy_data))
+col4.metric("Global Enrollment Columns", enrollment_data.shape[1])
+col5.metric("Rows (Enrollment Data)", len(enrollment_data))
 
 # Display Raw Data (optional toggles)
 if st.checkbox("Show Raw Learning Modalities Data", value=False):
     st.dataframe(df)
 
-if st.checkbox("Show Raw Global Literacy Data", value=False):
-    st.dataframe(literacy_data)
+if st.checkbox("Show Raw Global Enrollment Data", value=False):
+    st.dataframe(enrollment_data)
 
 # Pivot Table for Visualization (Learning Modalities)
 table = pd.pivot_table(df, values='student_count', index=['week'],
@@ -91,36 +97,36 @@ line_chart = px.line(
 )
 st.plotly_chart(line_chart)
 
-# Global Literacy Analysis
-st.subheader("Global Literacy Trends")
+# Global Enrollment Analysis
+st.subheader("Global Enrollment Trends")
 st.text("""
-The following visualizations explore global literacy rates by country over time.
+The following visualizations explore global primary school enrollment trends by country over the years.
 """)
 
-# Literacy Rate Trend by Country
+# Enrollment Trend by Country
 countries = st.multiselect(
     "Select Countries to Display",
-    options=literacy_data["Entity"].unique(),
-    default=["India", "United States", "China"]
+    options=enrollment_data["Country Name"].unique(),
+    default=["United States", "India", "China"]
 )
-filtered_literacy = literacy_data[literacy_data["Entity"].isin(countries)]
+filtered_enrollment = enrollment_data[enrollment_data["Country Name"].isin(countries)]
 
-literacy_trend = px.line(
-    filtered_literacy,
+enrollment_trend = px.line(
+    filtered_enrollment,
     x="Year",
-    y="Literacy (% age 15 and above)",
-    color="Entity",
-    title="Literacy Rate Trends by Country",
-    labels={"Year": "Year", "Literacy (% age 15 and above)": "Literacy Rate (%)", "Entity": "Country"}
+    y="Value",
+    color="Country Name",
+    title="Primary School Enrollment Trends by Country",
+    labels={"Year": "Year", "Value": "Enrollment", "Country Name": "Country"}
 )
-st.plotly_chart(literacy_trend)
+st.plotly_chart(enrollment_trend)
 
-# Combined Analysis Placeholder
-st.subheader("Combined Analysis: Learning Modalities and Literacy")
+# Combined Analysis: Enrollment and Modalities
+st.subheader("Combined Analysis: Learning Modalities and Enrollment")
 st.text("""
-You can extend this section by combining insights from both datasets
-to explore relationships between learning modalities and literacy trends.
+The bar chart below combines the learning modality trends with total enrollment trends for selected countries.
 """)
+st.text("This section can be expanded with more combined insights.")
 
 # Footer
-st.text("Dashboard created with Streamlit | Data Sources: NCES, OWID")
+st.text("Dashboard created with Streamlit | Data Sources: NCES, UNESCO")
