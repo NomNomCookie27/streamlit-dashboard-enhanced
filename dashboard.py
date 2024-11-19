@@ -18,7 +18,7 @@ df['week_recoded'] = pd.to_datetime(df['week'])
 df['zip_code'] = df['zip_code'].astype(str)
 
 # Load Data (Global Enrollment)
-url = "https://datahub.io/core/global-primary-school-enrollment/r/enrollment.csv"
+url = "https://raw.githubusercontent.com/datasets/education/master/data/primary-school-enrollment.csv"
 response = requests.get(url)
 enrollment_data = pd.read_csv(StringIO(response.text))  # Load CSV from the response text
 
@@ -102,25 +102,22 @@ st.subheader("Global Enrollment Trends")
 st.text("""
 The following visualizations explore global primary school enrollment trends by country over the years.
 """)
-# Check the column names in the enrollment data
-st.write(enrollment_data.columns)
-
 
 # Enrollment Trend by Country
 countries = st.multiselect(
     "Select Countries to Display",
-    options=enrollment_data["Country Name"].unique(),
+    options=enrollment_data["Country"].unique(),
     default=["United States", "India", "China"]
 )
-filtered_enrollment = enrollment_data[enrollment_data["Country Name"].isin(countries)]
+filtered_enrollment = enrollment_data[enrollment_data["Country"].isin(countries)]
 
 enrollment_trend = px.line(
     filtered_enrollment,
     x="Year",
     y="Value",
-    color="Country Name",
+    color="Country",
     title="Primary School Enrollment Trends by Country",
-    labels={"Year": "Year", "Value": "Enrollment", "Country Name": "Country"}
+    labels={"Year": "Year", "Value": "Enrollment", "Country": "Country"}
 )
 st.plotly_chart(enrollment_trend)
 
@@ -132,4 +129,4 @@ The bar chart below combines the learning modality trends with total enrollment 
 st.text("This section can be expanded with more combined insights.")
 
 # Footer
-st.text("Dashboard created with Streamlit | Data Sources: NCES, UNESCO")
+st.text("Dashboard created with Streamlit | Data Sources: NCES, World Bank")
