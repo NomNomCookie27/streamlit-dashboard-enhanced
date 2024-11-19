@@ -134,9 +134,6 @@ The following visualizations explore global primary school enrollment trends by 
 # Get available countries from the dataset (ISO codes)
 available_countries = enrollment_data["Country"].unique()
 
-# Display available countries (for debugging)
-st.text("Available countries in the dataset:")
-st.write(available_countries)
 
 # Enrollment Trend by Country
 countries = st.multiselect(
