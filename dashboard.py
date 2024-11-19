@@ -7,7 +7,7 @@ st.header("Enhanced Streamlit Dashboard: Learning Modalities and Global Enrollme
 st.subheader("Overview")
 st.text("""
 This dashboard visualizes data related to school learning modalities (Hybrid, In-Person, and Remote) from 2020-2021,
-along with global school enrollment data. Explore trends, comparisons, and insights through interactive visualizations.
+along with global primary school enrollment data. Explore trends, comparisons, and insights through interactive visualizations.
 """)
 
 # Load Data (Learning Modalities)
@@ -16,10 +16,7 @@ df['week_recoded'] = pd.to_datetime(df['week'])
 df['zip_code'] = df['zip_code'].astype(str)
 
 # Load Data (Global Enrollment)
-enrollment_data = pd.read_csv(
-    "https://stats.oecd.org/sdmx-json/data/DP_LIVE/.EDU_ENRL_TOTAL.../OECD?contentType=csv&detail=code&separator=comma&csv-lang=en"
-)
-enrollment_data = enrollment_data.rename(columns={"LOCATION": "Country", "TIME": "Year", "Value": "Enrollment"})
+enrollment_data = pd.read_csv("https://datahub.io/core/global-primary-school-enrollment/r/enrollment.csv")
 st.text("Data successfully loaded!")
 
 # Metrics Section
@@ -98,24 +95,24 @@ st.plotly_chart(line_chart)
 # Global Enrollment Analysis
 st.subheader("Global Enrollment Trends")
 st.text("""
-The following visualizations explore global school enrollment trends by country over the years.
+The following visualizations explore global primary school enrollment trends by country over the years.
 """)
 
 # Enrollment Trend by Country
 countries = st.multiselect(
     "Select Countries to Display",
-    options=enrollment_data["Country"].unique(),
-    default=["USA", "FRA", "DEU"]
+    options=enrollment_data["Country Name"].unique(),
+    default=["United States", "India", "China"]
 )
-filtered_enrollment = enrollment_data[enrollment_data["Country"].isin(countries)]
+filtered_enrollment = enrollment_data[enrollment_data["Country Name"].isin(countries)]
 
 enrollment_trend = px.line(
     filtered_enrollment,
     x="Year",
-    y="Enrollment",
-    color="Country",
-    title="Enrollment Trends by Country",
-    labels={"Year": "Year", "Enrollment": "Total Enrollment", "Country": "Country"}
+    y="Value",
+    color="Country Name",
+    title="Primary School Enrollment Trends by Country",
+    labels={"Year": "Year", "Value": "Enrollment", "Country Name": "Country"}
 )
 st.plotly_chart(enrollment_trend)
 
@@ -124,29 +121,7 @@ st.subheader("Combined Analysis: Learning Modalities and Enrollment")
 st.text("""
 The bar chart below combines the learning modality trends with total enrollment trends for selected countries.
 """)
-combined_table = table.copy()
-combined_table["Total Enrollment"] = filtered_enrollment.groupby("Year")["Enrollment"].sum().reset_index(drop=True)
-
-combined_chart = px.bar(
-    combined_table,
-    x="week",
-    y=["Hybrid", "In Person", "Remote", "Total Enrollment"],
-    title="Combined Learning Modalities and Global Enrollment",
-    labels={"week": "Week", "value": "Count", "variable": "Category"}
-)
-st.plotly_chart(combined_chart)
-
-# Pie Chart for Enrollment Distribution (Latest Year)
-latest_year = enrollment_data["Year"].max()
-latest_data = enrollment_data[enrollment_data["Year"] == latest_year]
-
-enrollment_pie = px.pie(
-    latest_data,
-    values="Enrollment",
-    names="Country",
-    title=f"Enrollment Distribution by Country ({latest_year})"
-)
-st.plotly_chart(enrollment_pie)
+st.text("This section can be expanded with more combined insights.")
 
 # Footer
-st.text("Dashboard created with Streamlit | Data Sources: NCES, OECD")
+st.text("Dashboard created with Streamlit | Data Sources: NCES, UNESCO")
