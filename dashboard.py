@@ -22,10 +22,20 @@ url = "https://stats.oecd.org/sdmx-json/data/DP_LIVE/.EDU_ENRL_TOTAL.../OECD?con
 response = requests.get(url)
 enrollment_data = pd.read_csv(StringIO(response.text))  # Load CSV from the response text
 
-st.text("Data successfully loaded!")
+# Display Data Inspection - Check for available columns in the global enrollment data
 st.subheader("Global Enrollment Data - Preview")
-st.text(enrollment_data.head().to_string())
+st.text("Columns in Global Enrollment Data:")
+st.write(enrollment_data.columns)
 
+# Show first few rows of the data
+st.text("First 5 rows of the global enrollment data:")
+st.write(enrollment_data.head())
+
+# Fix the correct column names based on the data preview
+# Check if 'LOCATION' (country) and 'TIME' (year) are available
+# Use 'LOCATION' for country and 'TIME' for year
+enrollment_data['Country'] = enrollment_data['LOCATION']
+enrollment_data['Year'] = enrollment_data['TIME']
 
 # Metrics Section
 st.subheader("Data Overview")
@@ -129,7 +139,15 @@ st.subheader("Combined Analysis: Learning Modalities and Enrollment")
 st.text("""
 The bar chart below combines the learning modality trends with total enrollment trends for selected countries.
 """)
-st.text("This section can be expanded with more combined insights.")
+combined_chart = px.bar(
+    filtered_enrollment,
+    x="Year",
+    y="Value",
+    title="Combined Learning Modalities and Enrollment Trends",
+    labels={"Year": "Year", "Value": "Enrollment/Modality"}
+)
+st.plotly_chart(combined_chart)
 
 # Footer
-st.text("Dashboard created with Streamlit | Data Sources: NCES, World Bank")
+st.text("Dashboard created with Streamlit | Data Sources: NCES, OECD")
+
