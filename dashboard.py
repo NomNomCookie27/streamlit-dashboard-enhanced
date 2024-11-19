@@ -31,12 +31,6 @@ st.write(enrollment_data.columns)
 st.text("First 5 rows of the global enrollment data:")
 st.write(enrollment_data.head())
 
-# Fix the correct column names based on the data preview
-# Check if 'LOCATION' (country) and 'TIME' (year) are available
-# Use 'LOCATION' for country and 'TIME' for year
-enrollment_data['Country'] = enrollment_data['LOCATION']
-enrollment_data['Year'] = enrollment_data['TIME']
-
 # Metrics Section
 st.subheader("Data Overview")
 col1, col2, col3 = st.columns(3)
@@ -54,6 +48,15 @@ if st.checkbox("Show Raw Learning Modalities Data", value=False):
 
 if st.checkbox("Show Raw Global Enrollment Data", value=False):
     st.dataframe(enrollment_data)
+
+# Fix the correct column names based on the data preview
+# After displaying the columns and previewing the data, check the correct column names and use them
+
+# Example - If 'TIME' doesn't exist, we need to check the exact column names. 
+# For now, assume 'TIME_PERIOD' is the column for year (update accordingly)
+
+enrollment_data['Country'] = enrollment_data['LOCATION']
+enrollment_data['Year'] = enrollment_data['TIME_PERIOD']  # Change 'TIME_PERIOD' if different
 
 # Pivot Table for Visualization (Learning Modalities)
 table = pd.pivot_table(df, values='student_count', index=['week'],
@@ -150,4 +153,3 @@ st.plotly_chart(combined_chart)
 
 # Footer
 st.text("Dashboard created with Streamlit | Data Sources: NCES, OECD")
-
