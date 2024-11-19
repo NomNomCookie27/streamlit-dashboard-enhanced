@@ -102,7 +102,9 @@ st.subheader("Global Enrollment Trends")
 st.text("""
 The following visualizations explore global primary school enrollment trends by country over the years.
 """)
-st.write(enrollment_data.head())
+# Check the column names in the enrollment data
+st.write(enrollment_data.columns)
+
 
 # Enrollment Trend by Country
 countries = st.multiselect(
