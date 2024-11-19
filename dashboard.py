@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 
-st.header("2024 AHI 507 Streamlit Example")
+st.header("2024 AHI 597 Streamlit Example")
 st.subheader("We are going to go through a couple different examples of loading and visualization information into this dashboard")
 
 st.text("""In this streamlit dashboard, we are going to focus on some recently released school learning modalities data from the NCES, for the years of 2021.""")
