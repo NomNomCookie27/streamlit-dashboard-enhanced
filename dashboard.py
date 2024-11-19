@@ -30,34 +30,56 @@ if st.checkbox("Show Raw Data", value=False):
 table = pd.pivot_table(df, values='student_count', index=['week'],
                        columns=['learning_modality'], aggfunc="sum").reset_index()
 
-# Filter Data by Date Range
-st.subheader("Filter Data by Date Range")
-start_date, end_date = st.slider(
-    "Select Date Range",
-    min_value=df['week_recoded'].min().date(),
-    max_value=df['week_recoded'].max().date(),
-    value=(df['week_recoded'].min().date(), df['week_recoded'].max().date())
-)
-filtered_df = df[(df['week_recoded'] >= pd.Timestamp(start_date)) & (df['week_recoded'] <= pd.Timestamp(end_date))]
-st.write(f"Filtered data from {start_date} to {end_date}")
-st.dataframe(filtered_df)
-
-# Bar Charts for Learning Modalities
+# Bar Charts for Learning Modalities (using Plotly)
 st.subheader("Learning Modality Trends")
 st.text("""
 The bar charts below show the trends in the number of students participating in each learning modality
 (Hybrid, In-Person, and Remote) over time.
 """)
-st.bar_chart(table, x="week", y="Hybrid", title="Hybrid Learning Trend")
-st.bar_chart(table, x="week", y="In Person", title="In-Person Learning Trend")
-st.bar_chart(table, x="week", y="Remote", title="Remote Learning Trend")
+
+# Hybrid Bar Chart
+hybrid_chart = px.bar(
+    table, 
+    x="week", 
+    y="Hybrid", 
+    title="Hybrid Learning Trend",
+    labels={"week": "Week", "Hybrid": "Number of Students"}
+)
+st.plotly_chart(hybrid_chart)
+
+# In-Person Bar Chart
+in_person_chart = px.bar(
+    table, 
+    x="week", 
+    y="In Person", 
+    title="In-Person Learning Trend",
+    labels={"week": "Week", "In Person": "Number of Students"}
+)
+st.plotly_chart(in_person_chart)
+
+# Remote Bar Chart
+remote_chart = px.bar(
+    table, 
+    x="week", 
+    y="Remote", 
+    title="Remote Learning Trend",
+    labels={"week": "Week", "Remote": "Number of Students"}
+)
+st.plotly_chart(remote_chart)
 
 # Line Chart for Comparison
 st.subheader("Learning Modality Comparison")
 st.text("""
 The line chart below provides a comparative view of the trends for all three learning modalities over time.
 """)
-st.line_chart(table, x="week", y=["Hybrid", "In Person", "Remote"])
+line_chart = px.line(
+    table,
+    x="week",
+    y=["Hybrid", "In Person", "Remote"],
+    title="Comparison of Learning Modalities Over Time",
+    labels={"week": "Week", "value": "Number of Students", "variable": "Learning Modality"}
+)
+st.plotly_chart(line_chart)
 
 # Pie Chart for Learning Modality Distribution
 st.subheader("Learning Modality Distribution")
@@ -65,24 +87,6 @@ modality_data = df.groupby('learning_modality')['student_count'].sum().reset_ind
 fig = px.pie(modality_data, values='student_count', names='learning_modality',
              title="Distribution of Students Across Learning Modalities")
 st.plotly_chart(fig)
-
-# Interactive Modality Selection
-st.subheader("Filter by Learning Modality")
-modalities = st.multiselect(
-    "Select Learning Modalities to Display",
-    options=df['learning_modality'].unique(),
-    default=df['learning_modality'].unique()
-)
-filtered_modality = df[df['learning_modality'].isin(modalities)]
-st.write("Filtered Data Based on Selected Modalities")
-st.dataframe(filtered_modality)
-
-# Filter Data by Minimum Student Count
-st.subheader("Filter by Minimum Student Count")
-min_students = st.number_input("Minimum Student Count", value=1000)
-filtered_students = df[df['student_count'] >= min_students]
-st.write(f"Data with student count greater than {min_students}")
-st.dataframe(filtered_students)
 
 # Footer
 st.text("Dashboard created with Streamlit | Data Source: NCES")
