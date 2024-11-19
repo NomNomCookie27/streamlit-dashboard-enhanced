@@ -23,7 +23,8 @@ response = requests.get(url)
 enrollment_data = pd.read_csv(StringIO(response.text))  # Load CSV from the response text
 
 st.text("Data successfully loaded!")
-enrollment_data.head()
+st.subheader("Global Enrollment Data - Preview")
+st.text(enrollment_data.head().to_string())
 
 
 # Metrics Section
