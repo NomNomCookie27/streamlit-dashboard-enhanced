@@ -18,7 +18,7 @@ df['week_recoded'] = pd.to_datetime(df['week'])
 df['zip_code'] = df['zip_code'].astype(str)
 
 # Load Data (Global Enrollment)
-url = "https://raw.githubusercontent.com/datasets/education/master/data/primary-school-enrollment.csv"
+url = "https://stats.oecd.org/sdmx-json/data/DP_LIVE/.EDU_ENRL_TOTAL.../OECD?contentType=csv&detail=code&separator=comma&csv-lang=en"
 response = requests.get(url)
 enrollment_data = pd.read_csv(StringIO(response.text))  # Load CSV from the response text
 
