@@ -22,14 +22,6 @@ url = "https://stats.oecd.org/sdmx-json/data/DP_LIVE/.EDU_ENRL_TOTAL.../OECD?con
 response = requests.get(url)
 enrollment_data = pd.read_csv(StringIO(response.text))  # Load CSV from the response text
 
-# Display Data Inspection - Check for available columns in the global enrollment data
-st.subheader("Global Enrollment Data - Preview")
-st.text("Columns in Global Enrollment Data:")
-st.write(enrollment_data.columns)
-
-# Show first few rows of the data
-st.text("First 5 rows of the global enrollment data:")
-st.write(enrollment_data.head())
 
 # Check if the column 'LOCATION' is present and rename it
 if 'LOCATION' in enrollment_data.columns:
@@ -48,9 +40,7 @@ enrollment_data['Value'] = pd.to_numeric(enrollment_data['OBS_VALUE'], errors='c
 # Remove rows with NaN values in 'Year' or 'Value'
 enrollment_data = enrollment_data.dropna(subset=['Year', 'Value'])
 
-# Display the cleaned data
-st.text("Cleaned Global Enrollment Data:")
-st.write(enrollment_data.head())
+
 
 # Metrics Section
 st.subheader("Data Overview")
