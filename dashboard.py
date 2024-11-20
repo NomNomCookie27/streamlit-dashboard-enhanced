@@ -22,6 +22,15 @@ response = requests.get(url)
 enrollment_data = pd.read_csv(StringIO(response.text))  # Load CSV from the response text
 
 
+# Checking if the column 'LOCATION' is present and rename it
+if 'LOCATION' in enrollment_data.columns:
+    enrollment_data['Country'] = enrollment_data['LOCATION']
+else:
+    st.error("The 'LOCATION' column is not present in the dataset.")
+
+# Check for missing values in the 'Country' column and remove them
+enrollment_data = enrollment_data.dropna(subset=['Country'])
+
 # Clean and convert Year and Value to correct data types
 # Ensure Year is numeric and Value is numeric (float)
 enrollment_data['Year'] = pd.to_numeric(enrollment_data['TIME_PERIOD'], errors='coerce')
