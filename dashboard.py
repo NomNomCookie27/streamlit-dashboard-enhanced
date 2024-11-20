@@ -4,7 +4,6 @@ import plotly.express as px
 import requests
 from io import StringIO
 
-# Header and Introduction
 st.header("Enhanced Streamlit Dashboard: Learning Modalities and Global Enrollment Data")
 st.subheader("Overview")
 st.text("""
@@ -12,25 +11,16 @@ This dashboard visualizes data related to school learning modalities (Hybrid, In
 along with global primary school enrollment data. Explore trends, comparisons, and insights through interactive visualizations.
 """)
 
-# Load Data (Learning Modalities)
+# Loading Data (Learning Modalities)
 df = pd.read_csv("https://healthdata.gov/resource/a8v3-a3m3.csv?$limit=50000")
 df['week_recoded'] = pd.to_datetime(df['week'])
 df['zip_code'] = df['zip_code'].astype(str)
 
-# Load Data (Global Enrollment)
+# Loading Data (Global Enrollment)
 url = "https://stats.oecd.org/sdmx-json/data/DP_LIVE/.EDU_ENRL_TOTAL.../OECD?contentType=csv&detail=code&separator=comma&csv-lang=en"
 response = requests.get(url)
 enrollment_data = pd.read_csv(StringIO(response.text))  # Load CSV from the response text
 
-
-# Check if the column 'LOCATION' is present and rename it
-if 'LOCATION' in enrollment_data.columns:
-    enrollment_data['Country'] = enrollment_data['LOCATION']
-else:
-    st.error("The 'LOCATION' column is not present in the dataset.")
-
-# Check for missing values in the 'Country' column and remove them
-enrollment_data = enrollment_data.dropna(subset=['Country'])
 
 # Clean and convert Year and Value to correct data types
 # Ensure Year is numeric and Value is numeric (float)
