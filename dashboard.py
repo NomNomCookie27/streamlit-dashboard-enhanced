@@ -30,8 +30,6 @@ enrollment_data['Value'] = pd.to_numeric(enrollment_data['OBS_VALUE'], errors='c
 # Remove rows with NaN values in 'Year' or 'Value'
 enrollment_data = enrollment_data.dropna(subset=['Year', 'Value'])
 
-
-
 # Metrics Section
 st.subheader("Data Overview")
 col1, col2, col3 = st.columns(3)
@@ -111,7 +109,7 @@ st.text("""
 The following visualizations explore global primary school enrollment trends by country over the years.
 """)
 
-# Get available countries from the dataset (ISO codes)
+# Getting available countries from the dataset (ISO codes)
 available_countries = enrollment_data["Country"].unique()
 
 
@@ -122,7 +120,7 @@ countries = st.multiselect(
     default=["CHL", "PRT", "NZL"]  # Default values; make sure they are valid country codes
 )
 
-# Handle if no country is selected
+# Handling if no country is selected
 if countries:
     filtered_enrollment = enrollment_data[enrollment_data["Country"].isin(countries)]
     enrollment_trend = px.line(
